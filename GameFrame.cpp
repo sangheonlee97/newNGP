@@ -318,7 +318,7 @@ void GameFrame::Input(float deltaTime) {
 #endif
     if (m_curStage->GetStageNum() == 0) {
         for (int i = 0; i < MAX_BUFFER; ++i) {
-            if (keyInfo[i].down) {
+            if (keyInfo[VK_SPACE].down) {
                 NextStage();
                 break;
             }

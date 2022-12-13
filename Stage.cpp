@@ -730,9 +730,11 @@ bool Stage::Load(const string& fileName) {
 				newObj->Load(fp);
 				m_player = newObj;
 
-				Player* OtherPlayer1 = new Player(false);
-				OtherPlayer1->SetPt(m_player->GetPlayerPt());
-				m_otherPlayerList.push_back(OtherPlayer1);
+				for (int i{}; i < 3; ++i) {
+					Player* OtherPlayer1 = new Player(false);
+					OtherPlayer1->SetPt(m_player->GetPlayerPt());
+					m_otherPlayerList.push_back(OtherPlayer1);
+				}
 			}
 		}
 		else if (tag == TAGBARIGATE) {

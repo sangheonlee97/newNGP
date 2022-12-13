@@ -177,15 +177,71 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 				wr_server.SetIsIngame(true);
 				EndDialog(hDlg, 0);
 			}
+			Sleep(333);
 		}
 		else {
+			auto opIter = gameFrame.m_curStage->m_otherPlayerList.begin();
+			auto opIterEnd = gameFrame.m_curStage->m_otherPlayerList.end();
+			int tmp_num = 0;
+			char tmpstr[11];
+			char coordbuf[11];
+			for (auto iIter=opIter; iIter != opIterEnd; ++iIter) {
+				if (tmp_num == cl_num && gameFrame.m_curStage->m_player) {
+					tmpstr[0] = '\0';
 
+					send(cl_sock, "CO", 3, 0);
+
+					_itoa(tmp_num, tmpstr, 10);
+					send(cl_sock, tmpstr, 2, 0);
+
+					POINT pt = gameFrame.m_curStage->m_player->GetPlayerPt();
+					strcpy(coordbuf, "0000");
+					char tmpbuf[5];
+					_itoa(pt.x, tmpbuf, 10);
+					int lentmp = strlen(tmpbuf);
+					for (int i{}; i < lentmp; ++i) {
+						coordbuf[(4 - lentmp) + i] = tmpbuf[i];
+					}
+					send(cl_sock, coordbuf, 5, 0);
+
+					strcpy(coordbuf, "0000");
+					_itoa(pt.y, tmpbuf, 10);
+					lentmp = strlen(tmpbuf);
+					for (int i{}; i < lentmp; ++i) {
+						coordbuf[(4 - lentmp) + i] = tmpbuf[i];
+					}
+					send(cl_sock, coordbuf, 5, 0);
+				}
+				else if ((*iIter)) {
+					tmpstr[0] = '\0';
+
+					send(cl_sock, "CO", 3, 0);
+					POINT pt = (*iIter)->GetPlayerPt();
+					strcpy(coordbuf, "0000");
+					char tmpbuf[5];
+					_itoa(pt.x, tmpbuf, 10);
+					int lentmp = strlen(tmpbuf);
+					for (int i{}; i < lentmp; ++i) {
+						coordbuf[(4 - lentmp) + i] = tmpbuf[i];
+					}
+					send(cl_sock, coordbuf, 5, 0);
+
+					strcpy(coordbuf, "0000");
+					_itoa(pt.y, tmpbuf, 10);
+					lentmp = strlen(tmpbuf);
+					for (int i{}; i < lentmp; ++i) {
+						coordbuf[(4 - lentmp) + i] = tmpbuf[i];
+					}
+					send(cl_sock, coordbuf, 5, 0);
+				}
+				++tmp_num;
+			}
+			Sleep(6);
 		}
 
 		if (retval == SOCKET_ERROR) {
 			break;
 		}
-		Sleep(333);
 	}
 
 	return 0;
@@ -421,6 +477,9 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 			pt.y = atoi(recvcode);
 
 			auto opIter = gameFrame.m_curStage->m_otherPlayerList.begin();
+			for (int i{}; i < my_num; ++i) {
+				++opIter;
+			}
 			if ((*opIter)) {
 				(*opIter)->SetPt(pt);
 			}
@@ -448,11 +507,20 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 			recv(my_sock, recvcode, 2, MSG_WAITALL);
 			int editnum = atoi(recvcode);
 
+			POINT pt;
 			recv(my_sock, recvcode, 5, MSG_WAITALL);
-			int xcoord = atoi(recvcode);
+			pt.x = atoi(recvcode);
 
 			recv(my_sock, recvcode, 5, MSG_WAITALL);
-			int ycoord = atoi(recvcode);
+			pt.y = atoi(recvcode);
+
+			auto opIter = gameFrame.m_curStage->m_otherPlayerList.begin();
+			for (int i{}; i < editnum; ++i) {
+				++opIter;
+			}
+			if ((*opIter)) {
+				(*opIter)->SetPt(pt);
+			}
 		}
 		else if (strcmp(recvdata, "CR") == 0) {
 
