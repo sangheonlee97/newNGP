@@ -99,7 +99,7 @@ bool GameFrame::Init(HINSTANCE hInst, HWND hWnd) {
         }
 		LoadStage(fileName, i);
     }
-    SetStage(0);
+    SetStage(1);
    
     return true;
 }
